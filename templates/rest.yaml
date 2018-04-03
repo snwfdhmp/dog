@@ -1,0 +1,12 @@
+vars:
+  - PackagePath
+  - PackageName
+  - ResourceName
+  - ServerPort
+  - DBUsername
+  - DBPassword
+  - DBHost
+  - DBPort
+  - DBName
+root:
+  
