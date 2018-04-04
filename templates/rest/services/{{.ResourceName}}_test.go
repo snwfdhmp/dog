@@ -17,23 +17,23 @@ func TestNew{{.ResourceName}}Service(t *testing.T) {
 
 func Test{{.ResourceName}}Service_Get(t *testing.T) {
 	s := New{{.ResourceName}}Service(newMock{{.ResourceName}}DAO())
-	{{little .ResourceName}}, err := s.Get(nil, 1)
-	if assert.Nil(t, err) && assert.NotNil(t, {{little .ResourceName}}) {
-		assert.Equal(t, "aaa", {{little .ResourceName}}.Name)
+	{{unexported .ResourceName}}, err := s.Get(nil, 1)
+	if assert.Nil(t, err) && assert.NotNil(t, {{unexported .ResourceName}}) {
+		assert.Equal(t, "aaa", {{unexported .ResourceName}}.Name)
 	}
 
-	{{little .ResourceName}}, err = s.Get(nil, 100)
+	{{unexported .ResourceName}}, err = s.Get(nil, 100)
 	assert.NotNil(t, err)
 }
 
 func Test{{.ResourceName}}Service_Create(t *testing.T) {
 	s := New{{.ResourceName}}Service(newMock{{.ResourceName}}DAO())
-	{{little .ResourceName}}, err := s.Create(nil, &models.{{.ResourceName}}{
+	{{unexported .ResourceName}}, err := s.Create(nil, &models.{{.ResourceName}}{
 		Name: "ddd",
 	})
-	if assert.Nil(t, err) && assert.NotNil(t, {{little .ResourceName}}) {
-		assert.Equal(t, 4, {{little .ResourceName}}.Id)
-		assert.Equal(t, "ddd", {{little .ResourceName}}.Name)
+	if assert.Nil(t, err) && assert.NotNil(t, {{unexported .ResourceName}}) {
+		assert.Equal(t, 4, {{unexported .ResourceName}}.Id)
+		assert.Equal(t, "ddd", {{unexported .ResourceName}}.Name)
 	}
 
 	// dao error
@@ -52,12 +52,12 @@ func Test{{.ResourceName}}Service_Create(t *testing.T) {
 
 func Test{{.ResourceName}}Service_Update(t *testing.T) {
 	s := New{{.ResourceName}}Service(newMock{{.ResourceName}}DAO())
-	{{little .ResourceName}}, err := s.Update(nil, 2, &models.{{.ResourceName}}{
+	{{unexported .ResourceName}}, err := s.Update(nil, 2, &models.{{.ResourceName}}{
 		Name: "ddd",
 	})
-	if assert.Nil(t, err) && assert.NotNil(t, {{little .ResourceName}}) {
-		assert.Equal(t, 2, {{little .ResourceName}}.Id)
-		assert.Equal(t, "ddd", {{little .ResourceName}}.Name)
+	if assert.Nil(t, err) && assert.NotNil(t, {{unexported .ResourceName}}) {
+		assert.Equal(t, 2, {{unexported .ResourceName}}.Id)
+		assert.Equal(t, "ddd", {{unexported .ResourceName}}.Name)
 	}
 
 	// dao error
@@ -75,10 +75,10 @@ func Test{{.ResourceName}}Service_Update(t *testing.T) {
 
 func Test{{.ResourceName}}Service_Delete(t *testing.T) {
 	s := New{{.ResourceName}}Service(newMock{{.ResourceName}}DAO())
-	{{little .ResourceName}}, err := s.Delete(nil, 2)
-	if assert.Nil(t, err) && assert.NotNil(t, {{little .ResourceName}}) {
-		assert.Equal(t, 2, {{little .ResourceName}}.Id)
-		assert.Equal(t, "bbb", {{little .ResourceName}}.Name)
+	{{unexported .ResourceName}}, err := s.Delete(nil, 2)
+	if assert.Nil(t, err) && assert.NotNil(t, {{unexported .ResourceName}}) {
+		assert.Equal(t, 2, {{unexported .ResourceName}}.Id)
+		assert.Equal(t, "bbb", {{unexported .ResourceName}}.Name)
 	}
 
 	_, err = s.Delete(nil, 2)
@@ -93,7 +93,7 @@ func Test{{.ResourceName}}Service_Query(t *testing.T) {
 	}
 }
 
-func newMock{{.ResourceName}}DAO() {{little .ResourceName}}DAO {
+func newMock{{.ResourceName}}DAO() {{unexported .ResourceName}}DAO {
 	return &mock{{.ResourceName}}DAO{
 		records: []models.{{.ResourceName}}{
 			{Id: 1, Name: "aaa"},
@@ -124,20 +124,20 @@ func (m *mock{{.ResourceName}}DAO) Count(rs app.RequestScope) (int, error) {
 	return len(m.records), nil
 }
 
-func (m *mock{{.ResourceName}}DAO) Create(rs app.RequestScope, {{little .ResourceName}} *models.{{.ResourceName}}) error {
-	if {{little .ResourceName}}.Id != 0 {
+func (m *mock{{.ResourceName}}DAO) Create(rs app.RequestScope, {{unexported .ResourceName}} *models.{{.ResourceName}}) error {
+	if {{unexported .ResourceName}}.Id != 0 {
 		return errors.New("Id cannot be set")
 	}
-	{{little .ResourceName}}.Id = len(m.records) + 1
-	m.records = append(m.records, *{{little .ResourceName}})
+	{{unexported .ResourceName}}.Id = len(m.records) + 1
+	m.records = append(m.records, *{{unexported .ResourceName}})
 	return nil
 }
 
-func (m *mock{{.ResourceName}}DAO) Update(rs app.RequestScope, id int, {{little .ResourceName}} *models.{{.ResourceName}}) error {
-	{{little .ResourceName}}.Id = id
+func (m *mock{{.ResourceName}}DAO) Update(rs app.RequestScope, id int, {{unexported .ResourceName}} *models.{{.ResourceName}}) error {
+	{{unexported .ResourceName}}.Id = id
 	for i, record := range m.records {
 		if record.Id == id {
-			m.records[i] = *{{little .ResourceName}}
+			m.records[i] = *{{unexported .ResourceName}}
 			return nil
 		}
 	}
