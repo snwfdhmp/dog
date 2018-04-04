@@ -1,13 +1,15 @@
 vars:
-  - PackagePath
-  - PackageName
-  - ResourceName
-  - ServerPort
-  - DBUsername
-  - DBPassword
-  - DBHost
-  - DBPort
-  - DBName
+  ResourceName: "Cat"
+  ResourceFileName: "cat"
+  PackageName: "lolcat"
+  PackagePath: "github.com/snwfdhmp/lolcat"
+  ProjectName: "Lolcat"
+  DBUsername: "postgres"
+  DBPassword: "secret"
+  DBHost: "localhost"
+  DBPort: "5432"
+  DBName: "lolcat"
+  ServerPort: "8765"
 root:
   - server.go
 resource:

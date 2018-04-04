@@ -9,8 +9,15 @@ import (
 	"text/template"
 
 	"github.com/sirupsen/logrus"
+	"github.com/snwfdhmp/dog/pkg/config"
 	"github.com/spf13/afero"
+	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 )
+
+func init() {
+	log.SetLevel(logrus.ErrorLevel)
+}
 
 var (
 	fs  = afero.NewOsFs()
@@ -29,17 +36,47 @@ var (
 	}
 )
 
-func TemplateLocation(templateName string) (string, error) {
-	path := filepath.Join("/Users/snwfdhmp/go/src/github.com/snwfdhmp/dog/templates", templateName)
+func TemplateLocation(templateName string) (path string, err error) {
+	path = filepath.Join(config.TemplatesLocation, templateName)
 
 	exists, err := afero.Exists(fs, path)
 	if err != nil {
-		return "", err
+		return
 	} else if !exists {
-		return "", fmt.Errorf("%s: no such directory", path)
+		err = fmt.Errorf("%s: no such directory", path)
+		return
 	}
 
-	return path, nil
+	return
+}
+
+func TemplateFile(templateName string) (content []byte, err error) {
+	content, err = afero.ReadFile(fs, filepath.Join(config.TemplatesLocation, templateName+".yaml"))
+	return
+}
+
+func TemplateData(cmd *cobra.Command, templateName string, args []string) (data map[string]*string, err error) {
+	data = make(map[string]*string)
+	dataYaml := make(map[string]interface{})
+
+	templateFile, err := TemplateFile(templateName)
+	if err != nil {
+		return
+	}
+
+	if err = yaml.Unmarshal(templateFile, &dataYaml); err != nil {
+		return
+	}
+
+	for name, value := range dataYaml["vars"].(map[interface{}]interface{}) {
+		data[name.(string)] = cmd.Flags().StringP(name.(string), "", value.(string), "usage")
+	}
+
+	if err = cmd.Flags().Parse(args); err != nil {
+		return
+	}
+
+	return
 }
 
 type File struct {

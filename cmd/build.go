@@ -51,41 +51,20 @@ func buildFunc(cmd *cobra.Command, args []string) error {
 		return errors.New(buildUsage)
 	}
 
-	dataYaml := map[string]string{
-		"ResourceName":     "Patient",
-		"ResourceFileName": "patient",
-		"PackageName":      "testDog",
-		"PackagePath":      "github.com/snwfdhmp/testDog",
-		"ProjectName":      "testDog",
-		"DBUsername":       "postgres",
-		"DBPassword":       "secret",
-		"DBHost":           "localhost",
-		"DBPort":           "5432",
-		"DBName":           "test_dog",
-		"ServerPort":       "8765",
-	}
-
-	data := make(map[string]*string)
-
-	for name, value := range dataYaml {
-		data[name] = cmd.Flags().StringP(name, "", value, "usage")
-	}
-
-	if err := cmd.Flags().Parse(args); err != nil {
-		return err
-	}
-
-	wd, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-
-	fmt.Println("WD:", wd)
-
 	templateName := args[0]
 	// action := args[1]
 
 	location, err := util.TemplateLocation(templateName)
+	if err != nil {
+		return err
+	}
+
+	data, err := util.TemplateData(cmd, templateName, args)
+	if err != nil {
+		return err
+	}
+
+	wd, err := os.Getwd()
 	if err != nil {
 		return err
 	}
