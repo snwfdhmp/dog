@@ -9,4 +9,12 @@ vars:
   - DBPort
   - DBName
 root:
-  
+  - server.go
+resource:
+  - apis/{{.ResourceFileName}}.go
+  - apis/{{.ResourceFileName}}_test.go
+  - daos/{{.ResourceFileName}}.go
+  - daos/{{.ResourceFileName}}_test.go
+  - services/{{.ResourceFileName}}.go
+  - services/{{.ResourceFileName}}_test.go
+  - models/{{.ResourceFileName}}.go

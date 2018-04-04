@@ -15,16 +15,15 @@
 package cmd
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"os"
-	"strings"
-	"text/template"
+	// "reflect"
 
 	"github.com/snwfdhmp/dog/pkg/util"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
+	// "github.com/spf13/pflag"
 )
 
 var (
@@ -35,9 +34,10 @@ var (
 
 // buildCmd represents the build command
 var buildCmd = &cobra.Command{
-	Use:   "build",
-	Short: "A brief description of your command",
-	Long:  buildUsage,
+	Use:                "build",
+	Short:              "A brief description of your command",
+	Long:               buildUsage,
+	DisableFlagParsing: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := buildFunc(cmd, args); err != nil {
 			fmt.Println("fatal:", err)
@@ -49,6 +49,30 @@ var buildCmd = &cobra.Command{
 func buildFunc(cmd *cobra.Command, args []string) error {
 	if len(args) < 2 {
 		return errors.New(buildUsage)
+	}
+
+	dataYaml := map[string]string{
+		"ResourceName":     "Patient",
+		"ResourceFileName": "patient",
+		"PackageName":      "testDog",
+		"PackagePath":      "github.com/snwfdhmp/testDog",
+		"ProjectName":      "testDog",
+		"DBUsername":       "postgres",
+		"DBPassword":       "secret",
+		"DBHost":           "localhost",
+		"DBPort":           "5432",
+		"DBName":           "test_dog",
+		"ServerPort":       "8765",
+	}
+
+	data := make(map[string]*string)
+
+	for name, value := range dataYaml {
+		data[name] = cmd.Flags().StringP(name, "", value, "usage")
+	}
+
+	if err := cmd.Flags().Parse(args); err != nil {
+		return err
 	}
 
 	wd, err := os.Getwd()
@@ -66,58 +90,21 @@ func buildFunc(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	data := struct {
-		ResourceName string
-		PackageName  string
-		PackagePath  string
-	}{
-		"patient",
-		"testPackage",
-		"github.com/snwfdhmp/testPackage",
-	}
-
 	if err := afero.Walk(fs, location, func(path string, info os.FileInfo, err error) error {
-		realPath := path
 		if path == location {
 			return nil
 		}
-		path = strings.Replace(path, location, wd, -1)
-		tmpl, err := template.New("name").Parse(path)
-		if err != nil {
-			return err
-		}
-
-		buf := bytes.NewBuffer([]byte{})
-		if err := tmpl.Execute(buf, data); err != nil {
-			return err
-		}
-
-		path = buf.String()
-		// fmt.Println(path)
 		if info.IsDir() {
-			if err := fs.Mkdir(path, info.Mode().Perm()); err != nil {
+			translatedPath, err := util.TranslatePath(path, location, wd, data)
+			if err != nil {
+				return err
+			}
+			if err := fs.Mkdir(translatedPath, info.Mode().Perm()); err != nil {
 				return err
 			}
 		} else {
-			b, err := afero.ReadFile(fs, realPath)
+			_, err := util.TranslateFile(path, location, wd, data)
 			if err != nil {
-				return err
-			}
-
-			contentTmpl, err := template.New("content").Funcs(template.FuncMap{
-				"unexported": func(packageName string) string {
-					return strings.ToLower(packageName)
-				},
-			}).Parse(string(b))
-			if err != nil {
-				return err
-			}
-
-			content := bytes.NewBuffer([]byte{})
-
-			contentTmpl.Execute(content, data)
-
-			if err := afero.WriteFile(fs, path, content.Bytes(), info.Mode().Perm()); err != nil {
 				return err
 			}
 		}

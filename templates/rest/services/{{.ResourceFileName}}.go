@@ -5,39 +5,39 @@ import (
 	"{{.PackagePath}}/models"
 )
 
-// artistDAO specifies the interface of the artist DAO needed by ArtistService.
-type artistDAO interface {
-	// Get returns the artist with the specified artist ID.
-	Get(rs app.RequestScope, id int) (*models.Artist, error)
-	// Count returns the number of artists.
+// {{unexported .ResourceName}}DAO specifies the interface of the {{unexported .ResourceName}} DAO needed by {{unexported .ResourceName}}Service.
+type {{unexported .ResourceName}}DAO interface {
+	// Get returns the {{unexported .ResourceName}} with the specified {{unexported .ResourceName}} ID.
+	Get(rs app.RequestScope, id int) (*models.{{unexported .ResourceName}}, error)
+	// Count returns the number of {{unexported .ResourceName}}s.
 	Count(rs app.RequestScope) (int, error)
-	// Query returns the list of artists with the given offset and limit.
-	Query(rs app.RequestScope, offset, limit int) ([]models.Artist, error)
-	// Create saves a new artist in the storage.
-	Create(rs app.RequestScope, artist *models.Artist) error
-	// Update updates the artist with given ID in the storage.
-	Update(rs app.RequestScope, id int, artist *models.Artist) error
-	// Delete removes the artist with given ID from the storage.
+	// Query returns the list of {{unexported .ResourceName}}s with the given offset and limit.
+	Query(rs app.RequestScope, offset, limit int) ([]models.{{unexported .ResourceName}}, error)
+	// Create saves a new {{unexported .ResourceName}} in the storage.
+	Create(rs app.RequestScope, {{unexported .ResourceName}} *models.{{unexported .ResourceName}}) error
+	// Update updates the {{unexported .ResourceName}} with given ID in the storage.
+	Update(rs app.RequestScope, id int, {{unexported .ResourceName}} *models.{{unexported .ResourceName}}) error
+	// Delete removes the {{unexported .ResourceName}} with given ID from the storage.
 	Delete(rs app.RequestScope, id int) error
 }
 
-// ArtistService provides services related with artists.
-type ArtistService struct {
-	dao artistDAO
+// {{unexported .ResourceName}}Service provides services related with {{unexported .ResourceName}}s.
+type {{unexported .ResourceName}}Service struct {
+	dao {{unexported .ResourceName}}DAO
 }
 
-// NewArtistService creates a new ArtistService with the given artist DAO.
-func NewArtistService(dao artistDAO) *ArtistService {
-	return &ArtistService{dao}
+// New{{unexported .ResourceName}}Service creates a new {{unexported .ResourceName}}Service with the given {{unexported .ResourceName}} DAO.
+func New{{unexported .ResourceName}}Service(dao {{unexported .ResourceName}}DAO) *{{unexported .ResourceName}}Service {
+	return &{{unexported .ResourceName}}Service{dao}
 }
 
-// Get returns the artist with the specified the artist ID.
-func (s *ArtistService) Get(rs app.RequestScope, id int) (*models.Artist, error) {
+// Get returns the {{unexported .ResourceName}} with the specified the {{unexported .ResourceName}} ID.
+func (s *{{unexported .ResourceName}}Service) Get(rs app.RequestScope, id int) (*models.{{unexported .ResourceName}}, error) {
 	return s.dao.Get(rs, id)
 }
 
-// Create creates a new artist.
-func (s *ArtistService) Create(rs app.RequestScope, model *models.Artist) (*models.Artist, error) {
+// Create creates a new {{unexported .ResourceName}}.
+func (s *{{unexported .ResourceName}}Service) Create(rs app.RequestScope, model *models.{{unexported .ResourceName}}) (*models.{{unexported .ResourceName}}, error) {
 	if err := model.Validate(); err != nil {
 		return nil, err
 	}
@@ -47,8 +47,8 @@ func (s *ArtistService) Create(rs app.RequestScope, model *models.Artist) (*mode
 	return s.dao.Get(rs, model.Id)
 }
 
-// Update updates the artist with the specified ID.
-func (s *ArtistService) Update(rs app.RequestScope, id int, model *models.Artist) (*models.Artist, error) {
+// Update updates the {{unexported .ResourceName}} with the specified ID.
+func (s *{{unexported .ResourceName}}Service) Update(rs app.RequestScope, id int, model *models.{{unexported .ResourceName}}) (*models.{{unexported .ResourceName}}, error) {
 	if err := model.Validate(); err != nil {
 		return nil, err
 	}
@@ -58,22 +58,22 @@ func (s *ArtistService) Update(rs app.RequestScope, id int, model *models.Artist
 	return s.dao.Get(rs, id)
 }
 
-// Delete deletes the artist with the specified ID.
-func (s *ArtistService) Delete(rs app.RequestScope, id int) (*models.Artist, error) {
-	artist, err := s.dao.Get(rs, id)
+// Delete deletes the {{unexported .ResourceName}} with the specified ID.
+func (s *{{unexported .ResourceName}}Service) Delete(rs app.RequestScope, id int) (*models.{{unexported .ResourceName}}, error) {
+	{{unexported .ResourceName}}, err := s.dao.Get(rs, id)
 	if err != nil {
 		return nil, err
 	}
 	err = s.dao.Delete(rs, id)
-	return artist, err
+	return {{unexported .ResourceName}}, err
 }
 
-// Count returns the number of artists.
-func (s *ArtistService) Count(rs app.RequestScope) (int, error) {
+// Count returns the number of {{unexported .ResourceName}}s.
+func (s *{{unexported .ResourceName}}Service) Count(rs app.RequestScope) (int, error) {
 	return s.dao.Count(rs)
 }
 
-// Query returns the artists with the specified offset and limit.
-func (s *ArtistService) Query(rs app.RequestScope, offset, limit int) ([]models.Artist, error) {
+// Query returns the {{unexported .ResourceName}}s with the specified offset and limit.
+func (s *{{unexported .ResourceName}}Service) Query(rs app.RequestScope, offset, limit int) ([]models.{{unexported .ResourceName}}, error) {
 	return s.dao.Query(rs, offset, limit)
 }

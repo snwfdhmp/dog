@@ -9,33 +9,33 @@ import (
 )
 
 type (
-	// artistService specifies the interface for the artist service needed by artistResource.
-	artistService interface {
-		Get(rs app.RequestScope, id int) (*models.Artist, error)
-		Query(rs app.RequestScope, offset, limit int) ([]models.Artist, error)
+	// {{unexported .ResourceName}}Service specifies the interface for the {{unexported .ResourceName}} service needed by {{unexported .ResourceName}}Resource.
+	{{unexported .ResourceName}}Service interface {
+		Get(rs app.RequestScope, id int) (*models.{{unexported .ResourceName}}, error)
+		Query(rs app.RequestScope, offset, limit int) ([]models.{{unexported .ResourceName}}, error)
 		Count(rs app.RequestScope) (int, error)
-		Create(rs app.RequestScope, model *models.Artist) (*models.Artist, error)
-		Update(rs app.RequestScope, id int, model *models.Artist) (*models.Artist, error)
-		Delete(rs app.RequestScope, id int) (*models.Artist, error)
+		Create(rs app.RequestScope, model *models.{{unexported .ResourceName}}) (*models.{{unexported .ResourceName}}, error)
+		Update(rs app.RequestScope, id int, model *models.{{unexported .ResourceName}}) (*models.{{unexported .ResourceName}}, error)
+		Delete(rs app.RequestScope, id int) (*models.{{unexported .ResourceName}}, error)
 	}
 
-	// artistResource defines the handlers for the CRUD APIs.
-	artistResource struct {
-		service artistService
+	// {{unexported .ResourceName}}Resource defines the handlers for the CRUD APIs.
+	{{unexported .ResourceName}}Resource struct {
+		service {{unexported .ResourceName}}Service
 	}
 )
 
-// ServeArtist sets up the routing of artist endpoints and the corresponding handlers.
-func ServeArtistResource(rg *routing.RouteGroup, service artistService) {
-	r := &artistResource{service}
-	rg.Get("/artists/<id>", r.get)
-	rg.Get("/artists", r.query)
-	rg.Post("/artists", r.create)
-	rg.Put("/artists/<id>", r.update)
-	rg.Delete("/artists/<id>", r.delete)
+// Serve{{unexported .ResourceName}} sets up the routing of {{unexported .ResourceName}} endpoints and the corresponding handlers.
+func Serve{{unexported .ResourceName}}Resource(rg *routing.RouteGroup, service {{unexported .ResourceName}}Service) {
+	r := &{{unexported .ResourceName}}Resource{service}
+	rg.Get("/{{unexported .ResourceName}}s/<id>", r.get)
+	rg.Get("/{{unexported .ResourceName}}s", r.query)
+	rg.Post("/{{unexported .ResourceName}}s", r.create)
+	rg.Put("/{{unexported .ResourceName}}s/<id>", r.update)
+	rg.Delete("/{{unexported .ResourceName}}s/<id>", r.delete)
 }
 
-func (r *artistResource) get(c *routing.Context) error {
+func (r *{{unexported .ResourceName}}Resource) get(c *routing.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return err
@@ -49,7 +49,7 @@ func (r *artistResource) get(c *routing.Context) error {
 	return c.Write(response)
 }
 
-func (r *artistResource) query(c *routing.Context) error {
+func (r *{{unexported .ResourceName}}Resource) query(c *routing.Context) error {
 	rs := app.GetRequestScope(c)
 	count, err := r.service.Count(rs)
 	if err != nil {
@@ -64,8 +64,8 @@ func (r *artistResource) query(c *routing.Context) error {
 	return c.Write(paginatedList)
 }
 
-func (r *artistResource) create(c *routing.Context) error {
-	var model models.Artist
+func (r *{{unexported .ResourceName}}Resource) create(c *routing.Context) error {
+	var model models.{{unexported .ResourceName}}
 	if err := c.Read(&model); err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func (r *artistResource) create(c *routing.Context) error {
 	return c.Write(response)
 }
 
-func (r *artistResource) update(c *routing.Context) error {
+func (r *{{unexported .ResourceName}}Resource) update(c *routing.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return err
@@ -102,7 +102,7 @@ func (r *artistResource) update(c *routing.Context) error {
 	return c.Write(response)
 }
 
-func (r *artistResource) delete(c *routing.Context) error {
+func (r *{{unexported .ResourceName}}Resource) delete(c *routing.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return err
