@@ -11,12 +11,58 @@ vars:
   DBName: "lolcat"
   ServerPort: "8765"
 root:
-  - server.go
+  files:
+    - apis/apis_test.go
+    - apis/auth.go
+    - apis/auth_test.go
+    - apis/util.go
+    - apis/util_test.go
+    - app/config.go
+    - app/init.go
+    - app/logger.go
+    - app/scope.go
+    - app/transactional.go
+    - app/version.go
+    - config/app.yaml
+    - config/errors.yaml
+    - daos/daos_test.go
+    - models/identity.go
+    - util/paginated_list.go
+    - util/paginated_list_test.go
+    - .gitignore
+    - auth.go
+    - auth_test.go
+    - util.go
+    - util_test.go
+    - server.go
+    - README.md
+    - Makefile
+    - LICENSE
+errors:
+  files:
+    - errors/api_error.go
+    - errors/api_error_test.go
+    - errors/errors.go
+    - errors/errors_test.go
+    - errors/template.go
+    - errors/template_test.go
+testdata:
+  files:
+    - testdata/db.sql
+    - testdata/init.go
+    - testdata/README.md
+travis:
+  files:
+    - .travis.yml
+glide:
+  files:
+    - glide.yml
 resource:
-  - apis/{{.ResourceFileName}}.go
-  - apis/{{.ResourceFileName}}_test.go
-  - daos/{{.ResourceFileName}}.go
-  - daos/{{.ResourceFileName}}_test.go
-  - services/{{.ResourceFileName}}.go
-  - services/{{.ResourceFileName}}_test.go
-  - models/{{.ResourceFileName}}.go
+  files:
+    - apis/{{.ResourceFileName}}.go
+    - apis/{{.ResourceFileName}}_test.go
+    - daos/{{.ResourceFileName}}.go
+    - daos/{{.ResourceFileName}}_test.go
+    - services/{{.ResourceFileName}}.go
+    - services/{{.ResourceFileName}}_test.go
+    - models/{{.ResourceFileName}}.go

@@ -52,47 +52,22 @@ func buildFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	templateName := args[0]
-	// action := args[1]
-
-	location, err := util.TemplateLocation(templateName)
-	if err != nil {
-		return err
-	}
-
-	data, err := util.TemplateData(cmd, templateName, args)
-	if err != nil {
-		return err
-	}
-
+	action := args[1]
 	wd, err := os.Getwd()
 	if err != nil {
 		return err
 	}
 
-	if err := afero.Walk(fs, location, func(path string, info os.FileInfo, err error) error {
-		if path == location {
-			return nil
-		}
-		if info.IsDir() {
-			translatedPath, err := util.TranslatePath(path, location, wd, data)
-			if err != nil {
-				return err
-			}
-			if err := fs.Mkdir(translatedPath, info.Mode().Perm()); err != nil {
-				return err
-			}
-		} else {
-			_, err := util.TranslateFile(path, location, wd, data)
-			if err != nil {
-				return err
-			}
-		}
-		return nil
-	}); err != nil {
+	builder, err := util.NewBuilder(templateName)
+	if err != nil {
 		return err
 	}
 
-	return nil
+	if err := builder.Configure(cmd, args); err != nil {
+		return err
+	}
+
+	return builder.Run(action, wd)
 }
 
 func init() {
